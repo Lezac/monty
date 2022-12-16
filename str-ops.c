@@ -1,85 +1,118 @@
 #include "monty.h"
-/**
- * _strcmp - Function that compares two strings.
- * @s1: type str compared
- * @s2: type str compared
- * Return: 0 if s1 and s2 are equals.
- *         another value if they are different
- */
-int _strcmp(char *s1, char *s2)
-{
-	int i;
-
-	for (i = 0; s1[i] == s2[i] && s1[i]; i++)
-		;
-	if (s1[i] > s2[i])
-		return (1);
-	if (s1[i] < s2[i])
-		return (-1);
-	return (0);
-}
 
 /**
- * _sch - search if a char is inside a string
- * @s: string to review
- * @c: char to find
- * Return: 1 if success 0 if not
+ * rotr - rotates stack to the bottom
+ * @stack: doubly linked list
+ * @line_number: the number line
  */
-int _sch(char *s, char c)
+void rotr(stack_t **stack, unsigned int line_number)
 {
-	int cont = 0;
+	int a = 0, counter = 0;
+	stack_t *temp = *stack;
 
-	while (s[cont] != '\0')
+	(void)line_number;
+	if (*stack && (*stack)->next)
 	{
-		if (s[cont] == c)
+		while (temp)
 		{
-			break;
+			if (!temp->next)
+			{
+				a = temp->n;
+			}
+			counter++;
+			temp = temp->next;
 		}
-		cont++;
+		add_dnodeint(stack, a);
+		delete_dnodeint_at_index(stack, counter);
 	}
-	if (s[cont] == c)
-		return (1);
-	else
-		return (0);
 }
 
 /**
- * _strtoky - function that cut a string into tokens depending of the delimit
- * @s: string to cut in parts
- * @d: delimiters
- * Return: first partition
+ * pint - prints out everything in stack
+ * @stack: doubly linked list
+ * @line_number: the line
+ *
  */
-char *_strtoky(char *s, char *d)
+void pint(stack_t **stack, unsigned int line_number)
 {
-	static char *ultimo;
-	int i = 0, j = 0;
+	if (!*stack)
+	{
+		fprintf(stderr, "L%u: can't pint, stack empty\n", line_number);
+		cleaner();
+		exit(EXIT_FAILURE);
+	}
+	printf("%d\n", (*stack)->n);
+}
+
+/**
+ * check_string - verify if argument is alpha
+ * @s: string passed to function
+ * Return: integer
+ */
+int check_string(char *s)
+{
+	register int str_idx = 0;
 
 	if (!s)
-		s = ultimo;
-	while (s[i] != '\0')
 	{
-		if (_sch(d, s[i]) == 0 && s[i + 1] == '\0')
+		return (-1);
+	}
+	if (*s == '-')
+	{
+		s++;
+	}
+	while (s[str_idx])
+	{
+		if (s[str_idx] >= '0' && s[str_idx] <= '9')
 		{
-			ultimo = s + i + 1;
-			*ultimo = '\0';
-			s = s + j;
-			return (s);
+			str_idx++;
 		}
-		else if (_sch(d, s[i]) == 0 && _sch(d, s[i + 1]) == 0)
-			i++;
-		else if (_sch(d, s[i]) == 0 && _sch(d, s[i + 1]) == 1)
+		else
 		{
-			ultimo = s + i + 1;
-			*ultimo = '\0';
-			ultimo++;
-			s = s + j;
-			return (s);
-		}
-		else if (_sch(d, s[i]) == 1)
-		{
-			j++;
-			i++;
+			return (-1);
 		}
 	}
-	return (NULL);
+	return (1);
+}
+
+/**
+ * pstr - prints string
+ * @stack: doubly linked list
+ * @line_number: the line
+ */
+void pstr(stack_t **stack, unsigned int line_number)
+{
+	stack_t *temp = *stack;
+
+	(void)line_number;
+	while (temp && (temp->n > 0 && temp->n <= 127))
+	{
+		printf("%c", temp->n);
+		temp = temp->next;
+	}
+	printf("\n");
+}
+
+/**
+ * pchar - prints character
+ * @stack: doubly linked list
+ * @line_number: the line
+ *
+ * Return: Nothing.
+ */
+void pchar(stack_t **stack, unsigned int line_number)
+{
+	if (!*stack)
+	{
+		fprintf(stderr, "L%u: can't pchar, stack is empty\n", line_number);
+		cleaner();
+		exit(EXIT_FAILURE);
+	}
+	if ((*stack)->n < 0 || (*stack)->n > 127)
+	{
+		fprintf(stderr, "L%u: can't pchar, value out of range\n", line_number);
+		cleaner();
+		exit(EXIT_FAILURE);
+	}
+	printf("%c\n", (*stack)->n);
 }
